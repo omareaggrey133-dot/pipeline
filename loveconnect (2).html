@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoveConnect — Find Your Match ❤️</title>
+<style>
+/* ========== RESET & BASE ========== */
+:root {
+  --primary:#e91e63;--primary-dark:#c2185b;--primary-light:#f8bbd0;
+  --accent:#ff6f00;--bg:#fafafa;--card:#ffffff;--text:#333;--text-light:#888;
+  --success:#4caf50;--danger:#f44336;--warning:#ff9800;--border:#e0e0e0;
+  --shadow:0 2px 12px rgba(0,0,0,.08);--radius:12px;
+  --gradient:linear-gradient(135deg,#e91e63 0%,#ff6f00 100%);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
+
+/* ========== PAGES ========== */
+.page{display:none;min-height:100vh}.page.active{display:block}
+
+/* ========== HERO ========== */
+.hero{min-height:100vh;background:var(--gradient);display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(255,255,255,.08) 1px,transparent 1px);background-size:30px 30px;animation:heroFloat 20s linear infinite}
+@keyframes heroFloat{from{transform:translateY(0)}to{transform:translateY(-30px)}}
+.hero-content{position:relative;z-index:1;max-width:600px;padding:2rem}
+.hero-content h1{font-size:3.5rem;font-weight:800;margin-bottom:.5rem;text-shadow:2px 2px 4px rgba(0,0,0,.2)}
+.hero-content .tagline{font-size:1.3rem;opacity:.9;margin-bottom:2rem}
+.hero-content .heart-icon{font-size:5rem;margin-bottom:1rem;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+
+/* ========== BUTTONS ========== */
+.btn{display:inline-block;padding:12px 28px;border-radius:50px;font-size:1rem;font-weight:600;cursor:pointer;border:none;transition:all .3s;text-decoration:none;text-align:center}
+.btn:hover{transform:translateY(-2px);text-decoration:none}
+.btn-primary{background:var(--gradient);color:#fff;box-shadow:0 4px 15px rgba(233,30,99,.4)}
+.btn-primary:hover{box-shadow:0 6px 20px rgba(233,30,99,.5)}
+.btn-secondary{background:#fff;color:var(--primary);border:2px solid var(--primary)}
+.btn-success{background:var(--success);color:#fff}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-warning{background:var(--warning);color:#fff}
+.btn-sm{padding:8px 18px;font-size:.85rem}
+.btn-xs{padding:5px 12px;font-size:.78rem;border-radius:20px}
+.btn-block{width:100%}
+
+/* ========== AUTH ========== */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#fce4ec 0%,#fff3e0 100%);padding:1rem}
+.auth-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:2.5rem;width:100%;max-width:440px}
+.auth-card h2{text-align:center;color:var(--primary);margin-bottom:.3rem;font-size:2rem}
+.auth-card .subtitle{text-align:center;color:var(--text-light);margin-bottom:1.5rem}
+.fg{margin-bottom:1rem}
+.fg label{display:block;margin-bottom:6px;font-weight:600;font-size:.9rem;color:#555}
+.fg input,.fg select,.fg textarea{width:100%;padding:10px 14px;border:2px solid var(--border);border-radius:8px;font-size:.95rem;transition:border-color .2s;font-family:inherit}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--primary)}
+.error-box{background:#ffebee;color:var(--danger);padding:10px;border-radius:8px;margin-bottom:1rem;font-size:.9rem;display:none}
+.error-box.show{display:block}
+.auth-footer{text-align:center;margin-top:1.5rem;font-size:.9rem;color:var(--text-light)}
+
+/* ========== NAVBAR ========== */
+.navbar{background:#fff;padding:0 1.5rem;height:60px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);position:sticky;top:0;z-index:100}
+.navbar .logo{font-size:1.4rem;font-weight:800;color:var(--primary);display:flex;align-items:center;gap:6px;cursor:pointer}
+.nav-links{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.nav-links a{color:var(--text);font-weight:500;padding:7px 12px;border-radius:8px;transition:all .2s;font-size:.9rem;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:4px}
+.nav-links a:hover{background:var(--primary-light);color:var(--primary-dark);text-decoration:none}
+.nav-links a.active{background:var(--primary);color:#fff}
+.coin-badge{background:var(--accent);color:#fff;padding:4px 12px;border-radius:20px;font-size:.85rem;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+.unread-dot{background:var(--danger);color:#fff;font-size:.65rem;padding:1px 5px;border-radius:10px;margin-left:2px;font-weight:700}
+
+/* ========== MAIN CONTENT ========== */
+.mc{max-width:1200px;margin:0 auto;padding:1.5rem}
+
+/* ========== WELCOME BANNER ========== */
+.welcome-banner{background:var(--gradient);color:#fff;border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.welcome-banner h2{font-size:1.8rem;margin-bottom:.3rem}
+.welcome-banner p{opacity:.9}
+
+/* ========== STATS GRID ========== */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem}
+.stat-card{background:#fff;border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow);text-align:center;cursor:pointer;transition:transform .2s}
+.stat-card:hover{transform:translateY(-4px)}
+.stat-card .si{font-size:2rem;margin-bottom:.5rem}
+.stat-card .sv{font-size:1.6rem;font-weight:700;color:var(--primary)}
+.stat-card .sl{font-size:.85rem;color:var(--text-light)}
+
+/* ========== SECTION ========== */
+.section{background:#fff;border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow);margin-bottom:1.5rem}
+.section h3{font-size:1.2rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;color:var(--text)}
+
+/* ========== PEOPLE CARDS ========== */
+.people-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem}
+.pcard{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:all .3s;cursor:pointer}
+.pcard:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(0,0,0,.12)}
+.pcard .av-area{height:180px;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:5rem;position:relative}
+.pcard .av-area .gi{font-size:4rem;filter:drop-shadow(2px 2px 4px rgba(0,0,0,.2))}
+.pcard .od{position:absolute;top:12px;right:12px;width:14px;height:14px;border-radius:50%;border:2px solid #fff}
+.pcard .od.on{background:var(--success)}.pcard .od.off{background:#bbb}
+.pcard .cb{padding:1.1rem}
+.pcard .cb h3{font-size:1.1rem;margin-bottom:.3rem}
+.pcard .cb .il{font-size:.88rem;color:var(--text-light);display:flex;align-items:center;gap:5px;margin-bottom:.3rem}
+.pcard .cb .bio{font-size:.82rem;color:#666;margin-top:.4rem;line-height:1.4}
+.pcard .ca{display:flex;gap:.5rem;padding:0 1.1rem 1.1rem}
+.pcard .ca .btn{flex:1;font-size:.88rem}
+
+/* ========== FILTER BAR ========== */
+.filter-bar{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.filter-bar input,.filter-bar select{padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-size:.9rem}
+.filter-bar input:focus,.filter-bar select:focus{outline:none;border-color:var(--primary)}
+
+/* ========== TABS ========== */
+.tabs{display:flex;margin-bottom:1.5rem;border-bottom:2px solid var(--border)}
+.tab{padding:.8rem 1.5rem;cursor:pointer;font-weight:600;color:var(--text-light);border-bottom:3px solid transparent;transition:all .2s}
+.tab:hover{color:var(--primary)}.tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+
+/* ========== CHAT ========== */
+.chat-container{display:flex;height:calc(100vh - 60px)}
+.chat-sidebar{width:300px;background:#fff;border-right:1px solid var(--border);overflow-y:auto}
+.chat-sidebar-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);font-weight:700;display:flex;align-items:center;justify-content:space-between}
+.chat-item{display:flex;align-items:center;gap:.8rem;padding:.8rem 1.2rem;cursor:pointer;border-bottom:1px solid #f5f5f5;transition:background .2s}
+.chat-item:hover{background:#fce4ec}
+.chat-item.active-chat{background:var(--primary-light)}
+.chat-item .ca2{width:42px;height:42px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:1.4rem;position:relative;flex-shrink:0}
+.chat-item .ca2 .md{position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;border:2px solid #fff}
+.chat-item .md.on{background:var(--success)}.chat-item .md.off{background:#bbb}
+.chat-item .ci{flex:1;min-width:0}
+.chat-item .ci h4{font-size:.92rem;margin-bottom:2px}
+.chat-item .ci p{font-size:.78rem;color:var(--text-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-item .ct{font-size:.7rem;color:#aaa;white-space:nowrap}
+.chat-main{flex:1;display:flex;flex-direction:column}
+.chat-header{padding:.8rem 1.5rem;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.8rem}
+.chat-header .pa{width:38px;height:38px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.chat-header .pi h3{font-size:1rem}.chat-header .pi span{font-size:.78rem;color:var(--text-light)}
+.msgs-area{flex:1;overflow-y:auto;padding:1rem 1.5rem;background:#f8f9fa}
+.msg-b{max-width:72%;padding:10px 16px;border-radius:18px;margin-bottom:.6rem;font-size:.93rem;line-height:1.4;position:relative;word-wrap:break-word}
+.msg-b.sent{background:var(--primary);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.msg-b.recv{background:#fff;color:var(--text);margin-right:auto;border-bottom-left-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.msg-b .mt{font-size:.68rem;opacity:.7;margin-top:4px}
+.chat-input{padding:.8rem 1.5rem;background:#fff;border-top:1px solid var(--border);display:flex;gap:.6rem;align-items:center}
+.chat-input input{flex:1;padding:11px 16px;border:2px solid var(--border);border-radius:50px;font-size:.93rem}
+.chat-input input:focus{outline:none;border-color:var(--primary)}
+.chat-input button{width:44px;height:44px;border-radius:50%;border:none;background:var(--gradient);color:#fff;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s}
+.chat-input button:hover{transform:scale(1.1)}
+
+/* ========== COINS ========== */
+.coins-hero{background:var(--gradient);color:#fff;border-radius:var(--radius);padding:2rem;text-align:center;margin-bottom:1.5rem}
+.coins-hero .cc{font-size:3rem;font-weight:800}
+.coin-packages{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem}
+.coin-pkg{background:#fff;border-radius:var(--radius);padding:1.5rem;text-align:center;box-shadow:var(--shadow);border:2px solid transparent;transition:all .3s;cursor:pointer}
+.coin-pkg:hover,.coin-pkg.sel{border-color:var(--primary);transform:translateY(-4px)}
+.coin-pkg .ca3{font-size:2rem;font-weight:800;color:var(--primary)}
+.coin-pkg .cp{font-size:1.2rem;font-weight:600;margin-top:.5rem}
+.mpesa-info{background:#e8f5e9;border-radius:8px;padding:1rem;margin-bottom:1.5rem;border-left:4px solid var(--success)}
+.mpesa-info p{margin-bottom:.4rem;font-size:.95rem}
+.mpesa-info .pn{font-size:1.4rem;font-weight:700;color:var(--success)}
+
+/* ========== PROFILE ========== */
+.profile-header{background:var(--gradient);color:#fff;border-radius:var(--radius);padding:2.5rem;text-align:center;margin-bottom:1.5rem}
+.profile-avatar{width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:3.8rem;margin:0 auto 1rem;border:4px solid #fff}
+.profile-form{background:#fff;border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow);max-width:600px;margin:0 auto}
+
+/* ========== ADMIN ========== */
+.admin-header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:#fff;border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem}
+.admin-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem}
+.admin-stat{background:#fff;border-radius:var(--radius);padding:1.1rem;box-shadow:var(--shadow);text-align:center;border-left:4px solid var(--primary)}
+.admin-stat .val{font-size:1.8rem;font-weight:800;color:var(--primary)}
+.admin-stat .lbl{font-size:.82rem;color:var(--text-light);margin-top:.3rem}
+.atable{width:100%;border-collapse:collapse;font-size:.82rem}
+.atable th{background:#f5f5f5;padding:10px;text-align:left;font-weight:600;border-bottom:2px solid var(--border)}
+.atable td{padding:10px;border-bottom:1px solid #f5f5f5}
+.atable tr:hover td{background:#fce4ec}
+.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:.75rem;font-weight:600}
+.badge-pending{background:#fff3e0;color:#e65100}
+.badge-approved{background:#e8f5e9;color:#2e7d32}
+.badge-rejected{background:#ffebee;color:#c62828}
+.badge-online{background:#e8f5e9;color:#2e7d32}
+.badge-offline{background:#f5f5f5;color:#757575}
+.badge-admin{background:#e3f2fd;color:#1565c0}
+.badge-bonus{background:#e3f2fd;color:#1565c0}
+
+/* ========== NO COINS ========== */
+.no-coins{text-align:center;padding:3rem 1rem}
+.no-coins .bi{font-size:5rem;margin-bottom:1rem}
+
+/* ========== USER PROFILE VIEW ========== */
+.up-header{background:var(--gradient);color:#fff;border-radius:var(--radius);padding:2rem;text-align:center;margin-bottom:1.5rem}
+.up-avatar{width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:3.5rem;margin:0 auto 1rem;border:4px solid #fff}
+
+/* ========== MODAL ========== */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:#fff;border-radius:var(--radius);padding:2rem;max-width:400px;width:90%;max-height:80vh;overflow-y:auto}
+.modal-box h3{color:var(--primary);margin-bottom:1rem}
+
+/* ========== TOAST ========== */
+.toast{position:fixed;bottom:20px;right:20px;background:#333;color:#fff;padding:12px 20px;border-radius:8px;font-size:.9rem;z-index:9999;animation:slideIn .3s ease-out}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ========== RESPONSIVE ========== */
+@media(max-width:768px){
+  .hero-content h1{font-size:2.5rem}
+  .navbar{padding:0 .8rem;height:56px}.nav-links a{padding:5px 8px;font-size:.8rem}
+  .chat-sidebar{width:100%}.chat-main{display:none}
+  .chat-container.chat-open .chat-sidebar{display:none}
+  .chat-container.chat-open .chat-main{display:flex}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .people-grid{grid-template-columns:1fr}
+  .welcome-banner{flex-direction:column;text-align:center}
+  .admin-stats{grid-template-columns:repeat(2,1fr)}
+  .coin-packages{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .navbar .nav-links{gap:2px}.nav-links a{padding:4px 6px;font-size:.75rem}
+  .auth-card{padding:1.5rem}
+  .mc{padding:.8rem}
+}
+.hidden{display:none!important}
+.tc{text-align:center}
+</style>
+</head>
+<body>
+
+<!-- ==================== LANDING PAGE ==================== -->
+<div id="page-landing" class="page active">
+  <section class="hero">
+    <div class="hero-content">
+      <div class="heart-icon">❤️</div>
+      <h1>LoveConnect</h1>
+      <p class="tagline">Find amazing people near you. Chat, connect, and fall in love.</p>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="showPage('register')">Create Account</button>
+        <button class="btn btn-secondary" onclick="showPage('login')">Sign In</button>
+      </div>
+      <p style="margin-top:1.5rem;opacity:.8;font-size:.9rem">Join thousands finding their match every day 💕</p>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== REGISTER ==================== -->
+<div id="page-register" class="page">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h2>❤️ Join LoveConnect</h2>
+      <p class="subtitle">Create your account and find your match</p>
+      <div id="reg-error" class="error-box"></div>
+      <div class="fg"><label>Username</label><input id="r-username" placeholder="Choose a username"></div>
+      <div class="fg"><label>Password</label><input id="r-password" type="password" placeholder="Create a password"></div>
+      <div class="fg"><label>Full Name</label><input id="r-name" placeholder="Your full name"></div>
+      <div style="display:flex;gap:1rem">
+        <div class="fg" style="flex:1"><label>Age</label><input id="r-age" type="number" min="18" max="100" placeholder="18+"></div>
+        <div class="fg" style="flex:1"><label>Gender</label><select id="r-gender"><option value="">Select</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
+      </div>
+      <div class="fg"><label>Location</label><input id="r-location" placeholder="e.g. Nairobi, Mombasa, Kisumu"></div>
+      <div class="fg"><label>Phone Number (optional)</label><input id="r-phone" placeholder="e.g. 0712345678"></div>
+      <button class="btn btn-primary btn-block" style="margin-top:.5rem" onclick="doRegister()">Create Account & Get 5 Free Coins 🪙</button>
+      <div class="auth-footer">Already have an account? <a href="#" onclick="showPage('login');return false">Sign In</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== LOGIN ==================== -->
+<div id="page-login" class="page">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h2>❤️ Welcome Back</h2>
+      <p class="subtitle">Sign in to find your match</p>
+      <div id="login-error" class="error-box"></div>
+      <div class="fg"><label>Username</label><input id="l-username" placeholder="Your username"></div>
+      <div class="fg"><label>Password</label><input id="l-password" type="password" placeholder="Your password"></div>
+      <button class="btn btn-primary btn-block" style="margin-top:.5rem" onclick="doLogin()">Sign In</button>
+      <div class="auth-footer">Don't have an account? <a href="#" onclick="showPage('register');return false">Create one</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DASHBOARD ==================== -->
+<div id="page-dashboard" class="page">
+  <nav class="navbar">
+    <div class="logo" onclick="showPage('dashboard')">❤️ LoveConnect</div>
+    <div class="nav-links" id="main-nav"></div>
+  </nav>
+  <div class="mc">
+    <div class="welcome-banner">
+      <div><h2 id="dash-welcome">Welcome back! 👋</h2><p>Ready to find someone special today?</p></div>
+      <div><span class="coin-badge" id="dash-coins">🪙 0 Coins</span></div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card" onclick="showPage('nearby')"><div class="si">👥</div><div class="sv">Members</div><div class="sl">See everyone on LoveConnect</div></div>
+      <div class="stat-card" onclick="showPage('chat')"><div class="si">💬</div><div class="sv">Chat</div><div class="sl">Message your matches</div></div>
+      <div class="stat-card" onclick="showPage('coins')"><div class="si">🪙</div><div class="sv" id="dash-coins2">0</div><div class="sl">Your coins</div></div>
+      <div class="stat-card" onclick="showPage('profile')"><div class="si">👤</div><div class="sv">Profile</div><div class="sl">Edit your profile</div></div>
+    </div>
+    <div class="section">
+      <h3>👥 All Members (<span id="member-count">0</span>)</h3>
+      <p style="color:var(--text-light);margin-bottom:1rem">Everyone on LoveConnect — click to view their profile</p>
+      <div id="dash-members" class="people-grid"></div>
+    </div>
+    <div class="section">
+      <h3>🔥 Quick Tips</h3>
+      <div style="padding:1rem;line-height:2">
+        <p>🪙 <strong>New members get 5 free coins!</strong> Use them to start chatting.</p>
+        <p>📍 <strong>Set your location</strong> so people nearby can find you.</p>
+        <p>📝 <strong>Complete your profile</strong> with a bio to get more attention.</p>
+        <p>💳 <strong>Buy more coins</strong> to unlock unlimited chats. Send Ksh 100 to <strong>0727419552</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== NEARBY ==================== -->
+<div id="page-nearby" class="page">
+  <nav class="navbar"><div class="logo" onclick="showPage('dashboard')">❤️ LoveConnect</div><div class="nav-links" id="nearby-nav"></div></nav>
+  <div class="mc">
+    <h2 style="margin-bottom:.5rem">👥 All Members</h2>
+    <p style="color:var(--text-light);margin-bottom:1rem">See everyone on LoveConnect — browse, chat, and connect</p>
+    <div class="filter-bar">
+      <input id="search-q" placeholder="Search by name..." style="flex:1">
+      <select id="filter-gender"><option value="">All Genders</option><option value="male">Male</option><option value="female">Female</option></select>
+      <button class="btn btn-primary btn-sm" onclick="renderNearby()">Search</button>
+    </div>
+    <div class="tabs">
+      <div class="tab" id="tab-near" onclick="switchNearTab('near')">📍 Near Me</div>
+      <div class="tab active" id="tab-all" onclick="switchNearTab('all')">🌍 All Members</div>
+    </div>
+    <div id="nearby-grid" class="people-grid"></div>
+  </div>
+</div>
+
+<!-- ==================== USER PROFILE VIEW ==================== -->
+<div id="page-userprofile" class="page">
+  <nav class="navbar"><div class="logo" onclick="showPage('dashboard')">❤️ LoveConnect</div><div class="nav-links" id="up-nav"></div></nav>
+  <div class="mc" style="max-width:600px">
+    <div id="up-content"></div>
+  </div>
+</div>
+
+<!-- ==================== CHAT LIST ==================== -->
+<div id="page-chat" class="page">
+  <nav class="navbar"><div class="logo" onclick="showPage('dashboard')">❤️ LoveConnect</div><div class="nav-links" id="chat-nav"></div></nav>
+  <div class="mc" style="padding:0;max-width:100%">
+    <div class="chat-container" id="chatContainer">
+      <div class="chat-sidebar">
+        <div class="chat-sidebar-header"><span>💬 Messages</span><span class="coin-badge" id="chat-coins">🪙 0</span></div>
+        <div id="chat-list"></div>
+      </div>
+      <div class="chat-main" style="display:flex;align-items:center;justify-content:center">
+        <div style="text-align:center;color:var(--text-light)"><p style="font-size:4rem">💬</p><h3>Select a conversation</h3><p>Choose someone to chat with</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== CHAT WITH USER ==================== -->
+<div id="page-chatroom" class="page">
+  <nav class="navbar"><div class="logo" onclick="showPage('dashboard')">❤️ LoveConnect</div><div class="nav-links" id="cr-nav"></div></nav>
+  <div class="mc" style="padding:0;max-width:100%">
+    <div class="chat-container chat-open">
+      <div class="chat-main" style="flex:1">
+        <div class="chat-header" id="cr-header"></div>
+        <div class="msgs-area" id="cr-messages"></div>
+        <div class="chat-input">
+          <input id="cr-input" placeholder="Type a message..." autocomplete="off">
+          <button onclick="sendChatMsg()">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== COINS ==================== -->
+<div id="page-coins" class="page">
+  <nav class="navbar"><div class="logo" onclick="showPage('dashboard')">❤️ LoveConnect</div><div class="nav-links" id="coins-nav"></div></nav>
+  <div class="mc" style="max-width:700px;margin:0 auto">
+    <div class="coins-hero">
+      <p style="font-size:1.2rem;opacity:.9">Your Balance</p>
+      <div class="cc" id="coins-balance">🪙 0 Coins</div>
+      <p style="margin-top:.5rem;opacity:.8">1 Coin = 1 New Conversation</p>
+    </div>
+    <div class="section">
+      <h3>💰 Buy Coins via M-Pesa</h3>
+      <div class="mpesa-info">
+        <p><strong>Step 1:</strong> Send money via M-Pesa to:</p>
+        <p class="pn">📱 0727419552</p>
+        <p><strong>Step 2:</strong> Choose your package and enter the M-Pesa transaction code below</p>
+      </div>
+      <div class="coin-packages" id="coin-packages"></div>
+      <div class="fg"><label>Selected Package</label><input id="sel-pkg" readonly placeholder="Click a package above"></div>
+      <div class="fg"><label>Your Phone Number</label><input id="pay-phone" placeholder="e.g. 0712345678"></div>
+      <div class="fg"><label>M-Pesa Transaction Code</label><input id="pay-code" placeholder="e.g. SHK4B7G2TR" style="text-transform:uppercase"><small style="color:var(--text-light)">Enter the code you received after sending money</small></div>
+      <input type="hidden" id="pay-amount" value="0">
+      <button class="btn btn-primary btn-block" id="pay-btn" onclick="submitPayment()" disabled>Submit Payment</button>
+    </div>
+    <div class="section">
+      <h3>📋 Transaction History</h3>
+      <div id="tx-history" style="overflow-x:auto"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PROFILE ==================== -->
+<div id="page-profile" class="page">
+  <nav class="navbar"><div class="logo" onclick="showPage('dashboard')">❤️ LoveConnect</div><div class="nav-links" id="prof-nav"></div></nav>
+  <div class="mc" style="max-width:700px;margin:0 auto">
+    <div class="profile-header">
+      <div class="profile-avatar" id="prof-avatar">👤</div>
+      <h2 id="prof-name">—</h2>
+      <p id="prof-sub">—</p>
+    </div>
+    <div class="profile-form">
+      <h3 style="margin-bottom:1rem;color:var(--primary)">Edit Profile</h3>
+      <div class="fg"><label>Full Name</label><input id="p-name"></div>
+      <div style="display:flex;gap:1rem">
+        <div class="fg" style="flex:1"><label>Age</label><input id="p-age" type="number" min="18"></div>
+        <div class="fg" style="flex:1"><label>Location</label><input id="p-location"></div>
+      </div>
+      <div class="fg"><label>Phone Number</label><input id="p-phone" placeholder="Share your number with matches"></div>
+      <div class="fg"><label>Bio</label><textarea id="p-bio" rows="4" placeholder="Tell people about yourself..." style="resize:vertical"></textarea></div>
+      <button class="btn btn-primary btn-block" onclick="saveProfile()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== ADMIN ==================== -->
+<div id="page-admin" class="page">
+  <nav class="navbar"><div class="logo" onclick="showPage('dashboard')">❤️ LoveConnect</div><div class="nav-links" id="admin-nav"></div></nav>
+  <div class="mc" style="max-width:1400px">
+    <div class="admin-header">
+      <h1>⚙️ Admin Dashboard</h1>
+      <p>Manage LoveConnect — Users, payments, and messages</p>
+    </div>
+    <div class="admin-stats" id="admin-stats"></div>
+    <div class="section" id="admin-pending"></div>
+    <div class="section">
+      <h3>💰 Add Coins to User</h3>
+      <div style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap">
+        <div class="fg" style="flex:1;margin-bottom:0"><label>User ID</label><input id="ac-uid" type="number" min="1" placeholder="Enter user ID"></div>
+        <div class="fg" style="flex:1;margin-bottom:0"><label>Coins</label><input id="ac-amount" type="number" min="1" placeholder="Number of coins"></div>
+        <button class="btn btn-primary btn-sm" onclick="adminAddCoins()">Add Coins</button>
+      </div>
+    </div>
+    <div class="section" id="admin-users"></div>
+    <div class="section" id="admin-txns"></div>
+    <div class="section" id="admin-msgs"></div>
+  </div>
+</div>
+
+<!-- ==================== MODAL ==================== -->
+<div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
+  <div class="modal-box" onclick="event.stopPropagation()" id="modal-content"></div>
+</div>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+/* =====================================================
+   LoveConnect — Full Client-Side Dating App
+   Database: localStorage
+   ===================================================== */
+
+// ---- DATA LAYER ----
+const DB_KEY = 'lc_data';
+
+function getDB(){
+  const raw = localStorage.getItem(DB_KEY);
+  if(!raw) return initDB();
+  try{ return JSON.parse(raw); } catch(e){ return initDB(); }
+}
+function saveDB(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+
+function initDB(){
+  const db = {
+    users:[
+      {id:1,username:'Aggrey',password:hashPw('123456789Aggrey'),name:'Admin Aggrey',age:30,gender:'male',location:'Nairobi',phone:'',bio:'Site administrator',coins:9999,isAdmin:true,online:true,joined:Date.now()},
+      {id:2,username:'akinyi_wambui',password:hashPw('password123'),name:'Akinyi Wambui',age:24,gender:'female',location:'Nairobi',phone:'0712345678',bio:'Love cooking, traveling and good vibes! Looking for someone genuine 💕',coins:15,isAdmin:false,online:true,joined:Date.now()-86400000},
+      {id:3,username:'mike_ndungu',password:hashPw('password123'),name:'Mike Ndungu',age:27,gender:'male',location:'Nairobi',phone:'0723456789',bio:'Fitness enthusiast and tech geek. Let\'s grab coffee!',coins:8,isAdmin:false,online:false,joined:Date.now()-172800000},
+      {id:4,username:'grace_otieno',password:hashPw('password123'),name:'Grace Otieno',age:22,gender:'female',location:'Kisumu',phone:'0734567890',bio:'Music lover, poet at heart. Looking for my soulmate 🎶',coins:10,isAdmin:false,online:true,joined:Date.now()-259200000},
+      {id:5,username:'brian_kiprop',password:hashPw('password123'),name:'Brian Kiprop',age:26,gender:'male',location:'Nakuru',phone:'0745678901',bio:'Farmer by day, dreamer by night. Simple guy with big dreams.',coins:5,isAdmin:false,online:false,joined:Date.now()-345600000},
+      {id:6,username:'zawadi_hassan',password:hashPw('password123'),name:'Zawadi Hassan',age:23,gender:'female',location:'Mombasa',phone:'0756789012',bio:'Beach lover and foodie! Swahili culture runs in my veins 🌊',coins:12,isAdmin:false,online:true,joined:Date.now()-432000000},
+      {id:7,username:'dennis_kamau',password:hashPw('password123'),name:'Dennis Kamau',age:29,gender:'male',location:'Nairobi',phone:'0767890123',bio:'Businessman looking for a queen to build an empire with 👑',coins:20,isAdmin:false,online:false,joined:Date.now()-518400000},
+      {id:8,username:'cherono_kirui',password:hashPw('password123'),name:'Cherono Kirui',age:21,gender:'female',location:'Eldoret',phone:'0778901234',bio:'Student, athlete, and adventure seeker! 🏃‍♀️',coins:3,isAdmin:false,online:true,joined:Date.now()-604800000},
+      {id:9,username:'omar_juma',password:hashPw('password123'),name:'Omar Juma',age:25,gender:'male',location:'Mombasa',phone:'0789012345',bio:'Coast boy with a big heart. Love swimming and cooking 🍳',coins:7,isAdmin:false,online:false,joined:Date.now()-691200000},
+      {id:10,username:'njeri_wangari',password:hashPw('password123'),name:'Njeri Wangari',age:28,gender:'female',location:'Nairobi',phone:'0790123456',bio:'Creative designer, cat mom, and serial Netflix binger 😸',coins:6,isAdmin:false,online:true,joined:Date.now()-777600000},
+      {id:11,username:'peter_odhiambo',password:hashPw('password123'),name:'Peter Odhiambo',age:30,gender:'male',location:'Kisumu',phone:'0701234567',bio:'Engineer who loves football and nyama choma ⚽🥩',coins:15,isAdmin:false,online:false,joined:Date.now()-864000000}
+    ],
+    messages:[],
+    transactions:[],
+    matches:[],
+    nextUserId:12
+  };
+  saveDB(db);
+  return db;
+}
+
+// ---- HASHING ----
+function hashPw(pw){
+  let h=0;
+  for(let i=0;i<pw.length;i++){h=((h<<5)-h)+pw.charCodeAt(i);h|=0;}
+  return 'h:'+Math.abs(h);
+}
+function checkPw(pw,hash){ return hashPw(pw)===hash; }
+
+// ---- SESSION ----
+let currentUser = null;
+
+// ---- PAGE NAVIGATION ----
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const pg = document.getElementById('page-'+id);
+  if(pg) pg.classList.add('active');
+  window.scrollTo(0,0);
+  // render page content
+  if(id==='dashboard' && currentUser) renderDashboard();
+  if(id==='nearby' && currentUser) renderNearby();
+  if(id==='chat' && currentUser) renderChatList();
+  if(id==='coins' && currentUser) renderCoins();
+  if(id==='profile' && currentUser) renderProfile();
+  if(id==='admin' && currentUser && currentUser.isAdmin) renderAdmin();
+  if(id!=='landing' && id!=='login' && id!=='register' && currentUser) renderNav(id);
+}
+
+// ---- NAV RENDERER ----
+function renderNav(active){
+  const isAdmin = currentUser && currentUser.isAdmin;
+  const links = [
+    {id:'nearby',icon:'👥',label:'Members'},
+    {id:'chat',icon:'💬',label:'Chats'},
+    {id:'coins',icon:'🪙',label:'Coins'},
+    {id:'profile',icon:'👤',label:'Profile'},
+  ];
+  if(isAdmin) links.push({id:'admin',icon:'⚙️',label:'Admin'});
+  links.push({id:'logout',icon:'🚪',label:'Logout'});
+  const html = links.map(l=>`<a onclick="${l.id==='logout'?'doLogout()':'showPage(\''+l.id+'\')'}" class="${active===l.id?'active':''}" style="cursor:pointer">${l.icon} ${l.label}</a>`).join('');
+  // update all navs
+  ['main-nav','nearby-nav','chat-nav','cr-nav','coins-nav','prof-nav','up-nav','admin-nav'].forEach(nid=>{
+    const el=document.getElementById(nid);
+    if(el) el.innerHTML=html;
+  });
+}
+
+// ---- REGISTER ----
+function doRegister(){
+  const errBox=document.getElementById('reg-error');
+  const u=document.getElementById('r-username').value.trim();
+  const p=document.getElementById('r-password').value;
+  const n=document.getElementById('r-name').value.trim();
+  const a=parseInt(document.getElementById('r-age').value);
+  const g=document.getElementById('r-gender').value;
+  const l=document.getElementById('r-location').value.trim();
+  const ph=document.getElementById('r-phone').value.trim();
+  if(!u||!p||!n||!a||!g||!l){errBox.textContent='All fields are required';errBox.classList.add('show');return;}
+  if(a<18){errBox.textContent='You must be 18 or older';errBox.classList.add('show');return;}
+  const db=getDB();
+  if(db.users.find(x=>x.username.toLowerCase()===u.toLowerCase())){errBox.textContent='Username already taken';errBox.classList.add('show');return;}
+  const newUser={id:db.nextUserId++,username:u,password:hashPw(p),name:n,age:a,gender:g,location:l,phone:ph,bio:'',coins:5,isAdmin:false,online:true,joined:Date.now()};
+  db.users.push(newUser);
+  db.transactions.push({id:Date.now(),userId:newUser.id,amount:5,phone:'',mpesaCode:'',status:'bonus',date:Date.now()});
+  saveDB(db);
+  currentUser=newUser;
+  showPage('dashboard');
+  toast('✅ Account created! You got 5 free coins!');
+}
+
+// ---- LOGIN ----
+function doLogin(){
+  const errBox=document.getElementById('login-error');
+  const u=document.getElementById('l-username').value.trim();
+  const p=document.getElementById('l-password').value;
+  if(!u||!p){errBox.textContent='Enter username and password';errBox.classList.add('show');return;}
+  const db=getDB();
+  const user=db.users.find(x=>x.username.toLowerCase()===u.toLowerCase());
+  if(!user||!checkPw(p,user.password)){errBox.textContent='Invalid username or password';errBox.classList.add('show');return;}
+  user.online=true;
+  saveDB(db);
+  currentUser=user;
+  if(user.isAdmin){showPage('admin');}
+  else{showPage('dashboard');}
+  toast('👋 Welcome back, '+user.name+'!');
+}
+
+// ---- LOGOUT ----
+function doLogout(){
+  if(currentUser){
+    const db=getDB();const u=db.users.find(x=>x.id===currentUser.id);if(u)u.online=false;saveDB(db);
+  }
+  currentUser=null;
+  showPage('landing');
+}
+
+// ---- DASHBOARD ----
+function renderDashboard(){
+  if(!currentUser)return;
+  document.getElementById('dash-welcome').textContent='Welcome back, '+currentUser.name+'! 👋';
+  const db=getDB();const u=db.users.find(x=>x.id===currentUser.id);
+  if(u)currentUser=u;
+  document.getElementById('dash-coins').textContent='🪙 '+currentUser.coins+' Coins';
+  document.getElementById('dash-coins2').textContent=currentUser.coins;
+  // Show ALL members on dashboard
+  const allMembers=db.users.filter(x=>x.id!==currentUser.id).sort((a,b)=>(b.online?1:0)-(a.online?1:0));
+  document.getElementById('member-count').textContent=allMembers.length;
+  document.getElementById('dash-members').innerHTML=allMembers.map(p=>pcardHTML(p)).join('');
+}
+
+// ---- NEARBY ----
+let nearTab='all';
+function switchNearTab(t){nearTab=t;document.getElementById('tab-near').classList.toggle('active',t==='near');document.getElementById('tab-all').classList.toggle('active',t==='all');renderNearby();}
+
+function renderNearby(){
+  if(!currentUser)return;
+  const db=getDB();const u=db.users.find(x=>x.id===currentUser.id);if(u)currentUser=u;
+  const q=(document.getElementById('search-q')?.value||'').toLowerCase();
+  const gf=document.getElementById('filter-gender')?.value||'';
+  let people=db.users.filter(x=>x.id!==currentUser.id);
+  if(q)people=people.filter(x=>x.name.toLowerCase().includes(q)||x.username.toLowerCase().includes(q));
+  if(gf)people=people.filter(x=>x.gender===gf);
+  if(nearTab==='near')people=people.filter(x=>x.location.toLowerCase()===currentUser.location.toLowerCase());
+  people.sort((a,b)=>(b.online?1:0)-(a.online?1:0));
+  const grid=document.getElementById('nearby-grid');
+  if(!people.length){grid.innerHTML='<div class="tc" style="padding:3rem"><p style="font-size:3rem">👥</p><h3>'+(nearTab==='near'?'No one near '+currentUser.location+' yet':'No members found')+'</h3><p style="color:var(--text-light)">'+(nearTab==='near'?'Check the All Members tab!':'Try different filters')+'</p></div>';return;}
+  grid.innerHTML=people.map(p=>pcardHTML(p)).join('');
+}
+
+function pcardHTML(p){
+  const icon=p.gender==='female'?'👩':p.gender==='male'?'👨':'🧑';
+  return `<div class="pcard" onclick="viewUser(${p.id})">
+    <div class="av-area"><span class="gi">${icon}</span><span class="od ${p.online?'on':'off'}"></span></div>
+    <div class="cb"><h3>${esc(p.name)}</h3><div class="il">🎂 ${p.age} years old</div><div class="il">📍 ${esc(p.location)}</div>${p.bio?'<div class="bio">'+esc(p.bio.substring(0,100))+'</div>':''}</div>
+    <div class="ca"><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openChatWith(${p.id})">💬 Chat</button><button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();likeUser(${p.id})">❤️ Like</button></div>
+  </div>`;
+}
+
+function esc(s){if(!s)return '';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ---- VIEW USER PROFILE ----
+function viewUser(id){
+  const db=getDB();const u=db.users.find(x=>x.id===currentUser.id);if(u)currentUser=u;
+  const t=db.users.find(x=>x.id===id);
+  if(!t){showPage('nearby');return;}
+  const icon=t.gender==='female'?'👩':t.gender==='male'?'👨':'🧑';
+  document.getElementById('up-content').innerHTML=`
+    <div class="up-header"><div class="up-avatar">${icon}</div><h2>${esc(t.name)}</h2><p>🎂 ${t.age} years &bull; 📍 ${esc(t.location)}</p><span class="badge ${t.online?'badge-online':'badge-offline'}">${t.online?'🟢 Online Now':'⚫ Offline'}</span></div>
+    ${t.bio?'<div class="section"><h3>📝 About</h3><p style="padding:.5rem;line-height:1.6">'+esc(t.bio)+'</p></div>':''}
+    <div class="section"><h3>💬 Connect</h3><div style="display:flex;gap:1rem;flex-wrap:wrap;padding:.5rem"><button class="btn btn-primary" onclick="openChatWith(${t.id})">💬 Start Chat (1 Coin)</button><button class="btn btn-secondary" onclick="likeUser(${t.id})">❤️ Like</button></div></div>`;
+  showPage('userprofile');
+  renderNav('nearby');
+}
+
+// ---- LIKE ----
+function likeUser(tid){
+  if(!currentUser)return;
+  const db=getDB();
+  const existing=db.matches.find(m=>m.userId===currentUser.id&&m.targetId===tid);
+  if(existing){toast('Already acted!');return;}
+  db.matches.push({userId:currentUser.id,targetId:tid,action:'like',date:Date.now()});
+  const mutual=db.matches.find(m=>m.userId===tid&&m.targetId===currentUser.id&&m.action==='like');
+  if(mutual){toast('🎉 It\'s a match! You can now chat!');}
+  else{toast('❤️ Liked!');}
+  saveDB(db);
+}
+
+// ---- CHAT ----
+let chatPartnerId=null;
+let chatPollTimer=null;
+
+function renderChatList(){
+  if(!currentUser)return;
+  const db=getDB();const u=db.users.find(x=>x.id===currentUser.id);if(u)currentUser=u;
+  document.getElementById('chat-coins').textContent='🪙 '+currentUser.coins;
+  // Get conversations
+  const partnerIds=new Set();
+  db.messages.forEach(m=>{
+    if(m.senderId===currentUser.id)partnerIds.add(m.receiverId);
+    if(m.receiverId===currentUser.id)partnerIds.add(m.senderId);
+  });
+  const list=document.getElementById('chat-list');
+  if(!partnerIds.size){list.innerHTML='<div style="padding:2rem;text-align:center;color:var(--text-light)"><p style="font-size:3rem">💬</p><h3>No conversations yet</h3><p>Discover people and start chatting!</p><button class="btn btn-primary btn-sm" style="margin-top:1rem" onclick="showPage(\'nearby\')">Find People</button></div>';return;}
+  let html='';
+  partnerIds.forEach(pid=>{
+    const partner=db.users.find(x=>x.id===pid);if(!partner)return;
+    const msgs=db.messages.filter(m=>(m.senderId===currentUser.id&&m.receiverId===pid)||(m.senderId===pid&&m.receiverId===currentUser.id));
+    const last=msgs[msgs.length-1];
+    const icon=partner.gender==='female'?'👩':partner.gender==='male'?'👨':'🧑';
+    const unread=msgs.filter(m=>m.senderId===pid&&!m.read).length;
+    html+=`<div class="chat-item" onclick="openChatWith(${pid})"><div class="ca2">${icon}<span class="md ${partner.online?'on':'off'}"></span></div><div class="ci"><h4>${esc(partner.name)}${unread?'<span class="unread-dot">'+unread+'</span>':''}</h4><p>${last?esc(last.text.substring(0,50)):'Start chatting...'}</p></div><div class="ct">${last?fmtTime(last.date):''}</div></div>`;
+  });
+  list.innerHTML=html;
+}
+
+function openChatWith(pid){
+  if(!currentUser)return;
+  const db=getDB();const u=db.users.find(x=>x.id===currentUser.id);if(u)currentUser=u;
+  // Check if existing conversation
+  const existing=db.messages.find(m=>(m.senderId===currentUser.id&&m.receiverId===pid)||(m.senderId===pid&&m.receiverId===currentUser.id));
+  if(!existing){
+    if(currentUser.coins<1){
+      toast('🪙 Not enough coins! Buy coins to start chatting.');
+      showPage('coins');return;
+    }
+    // Deduct 1 coin
+    const user=db.users.find(x=>x.id===currentUser.id);
+    user.coins-=1;
+    currentUser.coins=user.coins;
+    saveDB(db);
+  }
+  chatPartnerId=pid;
+  const partner=db.users.find(x=>x.id===pid);if(!partner){showPage('chat');return;}
+  const icon=partner.gender==='female'?'👩':partner.gender==='male'?'👨':'🧑';
+  document.getElementById('cr-header').innerHTML=`<a onclick="showPage('chat')" style="font-size:1.5rem;cursor:pointer;text-decoration:none;margin-right:.5rem">←</a><div class="pa">${icon}</div><div class="pi"><h3>${esc(partner.name)}</h3><span>${partner.online?'🟢 Online':'📍 '+esc(partner.location)}</span></div><div style="margin-left:auto"><span class="coin-badge">🪙 ${currentUser.coins}</span></div>`;
+  renderChatMessages();
+  // Mark as read
+  db.messages.filter(m=>m.senderId===pid&&m.receiverId===currentUser.id&&!m.read).forEach(m=>m.read=true);
+  saveDB(db);
+  showPage('chatroom');
+  renderNav('chat');
+  // Scroll
+  setTimeout(()=>{const area=document.getElementById('cr-messages');area.scrollTop=area.scrollHeight;},100);
+  // Poll
+  if(chatPollTimer)clearInterval(chatPollTimer);
+  chatPollTimer=setInterval(()=>{renderChatMessages();},3000);
+}
+
+function renderChatMessages(){
+  if(!currentUser||!chatPartnerId)return;
+  const db=getDB();
+  const msgs=db.messages.filter(m=>(m.senderId===currentUser.id&&m.receiverId===chatPartnerId)||(m.senderId===chatPartnerId&&m.receiverId===currentUser.id));
+  const area=document.getElementById('cr-messages');
+  const wasAtBottom=area.scrollTop>=area.scrollHeight-area.clientHeight-50;
+  area.innerHTML=msgs.map(m=>`<div class="msg-b ${m.senderId===currentUser.id?'sent':'recv'}">${esc(m.text)}<div class="mt">${fmtTime(m.date)}</div></div>`).join('');
+  if(wasAtBottom)area.scrollTop=area.scrollHeight;
+}
+
+function sendChatMsg(){
+  if(!currentUser||!chatPartnerId)return;
+  const input=document.getElementById('cr-input');
+  const text=input.value.trim();
+  if(!text)return;
+  const db=getDB();
+  db.messages.push({id:Date.now(),senderId:currentUser.id,receiverId:chatPartnerId,text:text,read:false,date:Date.now()});
+  saveDB(db);
+  input.value='';
+  renderChatMessages();
+  // Refresh coins display
+  const u=db.users.find(x=>x.id===currentUser.id);if(u){currentUser=u;}
+  document.querySelector('#cr-header .coin-badge').textContent='🪙 '+currentUser.coins;
+}
+
+// Enter key for chat
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&document.getElementById('cr-input')===document.activeElement)sendChatMsg();
+});
+
+// ---- COINS ----
+let selCoinAmt=0;
+function renderCoins(){
+  if(!currentUser)return;
+  const db=getDB();const u=db.users.find(x=>x.id===currentUser.id);if(u)currentUser=u;
+  document.getElementById('coins-balance').textContent='🪙 '+currentUser.coins+' Coins';
+  const pkgs=[{coins:10,price:100},{coins:25,price:200,pop:true},{coins:60,price:500,best:true}];
+  document.getElementById('coin-packages').innerHTML=pkgs.map(p=>`<div class="coin-pkg" onclick="selectPkg(this,${p.coins},${p.price})"><div class="ca3">🪙 ${p.coins}</div><div class="cp">Ksh ${p.price}</div><div style="font-size:.8rem;color:var(--text-light)">${p.pop?'🔥 Popular':p.best?'Best value!':p.coins+' conversations'}</div></div>`).join('');
+  // Transaction history
+  const txs=db.transactions.filter(t=>t.userId===currentUser.id).sort((a,b)=>b.date-a.date);
+  const hist=document.getElementById('tx-history');
+  if(!txs.length){hist.innerHTML='<p style="color:var(--text-light);padding:1rem">No transactions yet</p>';return;}
+  hist.innerHTML='<table class="atable"><thead><tr><th>Date</th><th>Coins</th><th>M-Pesa Code</th><th>Status</th></tr></thead><tbody>'+txs.map(t=>`<tr><td>${new Date(t.date).toLocaleDateString()}</td><td>🪙 ${t.amount}</td><td>${t.mpesaCode||'—'}</td><td><span class="badge badge-${t.status}">${t.status}</span></td></tr>`).join('')+'</tbody></table>';
+}
+
+function selectPkg(el,coins,price){
+  document.querySelectorAll('.coin-pkg').forEach(p=>p.classList.remove('sel'));
+  el.classList.add('sel');
+  selCoinAmt=coins;
+  document.getElementById('sel-pkg').value=coins+' Coins — Ksh '+price;
+  document.getElementById('pay-amount').value=coins;
+  document.getElementById('pay-btn').disabled=false;
+}
+
+function submitPayment(){
+  if(!selCoinAmt){toast('Select a coin package first');return;}
+  const phone=document.getElementById('pay-phone').value.trim();
+  const code=document.getElementById('pay-code').value.trim().toUpperCase();
+  if(!code){toast('Enter your M-Pesa transaction code');return;}
+  const db=getDB();
+  db.transactions.push({id:Date.now(),userId:currentUser.id,amount:selCoinAmt,phone:phone,mpesaCode:code,status:'pending',date:Date.now()});
+  saveDB(db);
+  toast('✅ Payment submitted! Coins will be credited after admin verifies.');
+  document.getElementById('pay-code').value='';
+  document.getElementById('sel-pkg').value='';
+  selCoinAmt=0;
+  document.getElementById('pay-btn').disabled=true;
+  document.querySelectorAll('.coin-pkg').forEach(p=>p.classList.remove('sel'));
+  setTimeout(()=>renderCoins(),1500);
+}
+
+// ---- PROFILE ----
+function renderProfile(){
+  if(!currentUser)return;
+  const db=getDB();const u=db.users.find(x=>x.id===currentUser.id);if(u)currentUser=u;
+  const icon=currentUser.gender==='female'?'👩':currentUser.gender==='male'?'👨':'🧑';
+  document.getElementById('prof-avatar').textContent=icon;
+  document.getElementById('prof-name').textContent=currentUser.name;
+  document.getElementById('prof-sub').textContent='@'+currentUser.username+' • 🪙 '+currentUser.coins+' Coins';
+  document.getElementById('p-name').value=currentUser.name;
+  document.getElementById('p-age').value=currentUser.age;
+  document.getElementById('p-location').value=currentUser.location;
+  document.getElementById('p-phone').value=currentUser.phone;
+  document.getElementById('p-bio').value=currentUser.bio;
+}
+
+function saveProfile(){
+  if(!currentUser)return;
+  const db=getDB();
+  const u=db.users.find(x=>x.id===currentUser.id);
+  u.name=document.getElementById('p-name').value.trim();
+  u.age=parseInt(document.getElementById('p-age').value);
+  u.location=document.getElementById('p-location').value.trim();
+  u.phone=document.getElementById('p-phone').value.trim();
+  u.bio=document.getElementById('p-bio').value.trim();
+  currentUser=u;
+  saveDB(db);
+  toast('✅ Profile saved!');
+  renderProfile();
+}
+
+// ---- ADMIN ----
+function renderAdmin(){
+  if(!currentUser||!currentUser.isAdmin)return;
+  const db=getDB();
+  const totalUsers=db.users.length;
+  const onlineUsers=db.users.filter(x=>x.online).length;
+  const totalMsgs=db.messages.length;
+  const totalCoins=db.users.reduce((s,u)=>s+u.coins,0);
+  const pendingTx=db.transactions.filter(t=>t.status==='pending').length;
+
+  document.getElementById('admin-stats').innerHTML=`
+    <div class="admin-stat"><div class="val">${totalUsers}</div><div class="lbl">Total Users</div></div>
+    <div class="admin-stat"><div class="val">${onlineUsers}</div><div class="lbl">Online Now</div></div>
+    <div class="admin-stat"><div class="val">${totalMsgs}</div><div class="lbl">Total Messages</div></div>
+    <div class="admin-stat"><div class="val">🪙 ${totalCoins}</div><div class="lbl">Total Coins</div></div>
+    <div class="admin-stat"><div class="val" style="color:var(--warning)">${pendingTx}</div><div class="lbl">Pending Payments</div></div>`;
+
+  // Pending payments
+  const pending=db.transactions.filter(t=>t.status==='pending').sort((a,b)=>b.date-a.date);
+  let ph='';
+  if(pending.length){
+    ph='<h3>⚠️ Pending Payments ('+pending.length+')</h3><div style="overflow-x:auto"><table class="atable"><thead><tr><th>ID</th><th>User</th><th>Coins</th><th>Phone</th><th>M-Pesa Code</th><th>Date</th><th>Actions</th></tr></thead><tbody>';
+    pending.forEach(t=>{
+      const user=db.users.find(x=>x.id===t.userId);
+      ph+=`<tr><td>${t.id}</td><td><strong>${user?esc(user.name):'?'}</strong> <small>(@${user?user.username:'?'})</small></td><td>🪙 ${t.amount}</td><td>${t.phone||'—'}</td><td><strong>${t.mpesaCode||'—'}</strong></td><td>${new Date(t.date).toLocaleDateString()}</td><td><button class="btn btn-success btn-xs" onclick="adminApproveTx(${t.id})">✅ Approve</button> <button class="btn btn-danger btn-xs" onclick="adminRejectTx(${t.id})">❌ Reject</button></td></tr>`;
+    });
+    ph+='</tbody></table></div>';
+  } else {
+    ph='<h3>✅ No Pending Payments</h3><p style="color:var(--text-light)">All payments have been processed.</p>';
+  }
+  document.getElementById('admin-pending').innerHTML=ph;
+
+  // Users table
+  const users=db.users.sort((a,b)=>b.joined-a.joined);
+  let uh='<h3>👥 All Users ('+users.length+')</h3><div style="overflow-x:auto"><table class="atable"><thead><tr><th>ID</th><th>Username</th><th>Name</th><th>Age</th><th>Gender</th><th>Location</th><th>Phone</th><th>Coins</th><th>Online</th><th>Role</th><th>Actions</th></tr></thead><tbody>';
+  users.forEach(u=>{
+    uh+=`<tr><td>${u.id}</td><td>@${u.username}</td><td>${esc(u.name)}</td><td>${u.age}</td><td>${u.gender}</td><td>${esc(u.location)}</td><td>${u.phone||'—'}</td><td>🪙 ${u.coins}</td><td><span class="badge ${u.online?'badge-online':'badge-offline'}">${u.online?'Online':'Offline'}</span></td><td>${u.isAdmin?'<span class="badge badge-admin">Admin</span>':'User'}</td><td>${!u.isAdmin?'<button class="btn btn-danger btn-xs" onclick="adminDeleteUser('+u.id+')">🗑️</button>':''}</td></tr>`;
+  });
+  uh+='</tbody></table></div>';
+  document.getElementById('admin-users').innerHTML=uh;
+
+  // Transactions
+  const txs=db.transactions.sort((a,b)=>b.date-a.date).slice(0,50);
+  let th2='<h3>💳 Recent Transactions</h3><div style="overflow-x:auto"><table class="atable"><thead><tr><th>User</th><th>Coins</th><th>Phone</th><th>M-Pesa Code</th><th>Status</th><th>Date</th></tr></thead><tbody>';
+  txs.forEach(t=>{
+    const user=db.users.find(x=>x.id===t.userId);
+    th2+=`<tr><td>${user?esc(user.name):'?'} (${user?'@'+user.username:'?'})</td><td>🪙 ${t.amount}</td><td>${t.phone||'—'}</td><td>${t.mpesaCode||'—'}</td><td><span class="badge badge-${t.status}">${t.status}</span></td><td>${new Date(t.date).toLocaleDateString()}</td></tr>`;
+  });
+  th2+='</tbody></table></div>';
+  document.getElementById('admin-txns').innerHTML=th2;
+
+  // Messages
+  const msgs=db.messages.sort((a,b)=>b.date-a.date).slice(0,50);
+  let mh='<h3>💬 Recent Messages</h3><div style="overflow-x:auto"><table class="atable"><thead><tr><th>From</th><th>To</th><th>Message</th><th>Time</th></tr></thead><tbody>';
+  msgs.forEach(m=>{
+    const s=db.users.find(x=>x.id===m.senderId);
+    const r=db.users.find(x=>x.id===m.receiverId);
+    mh+=`<tr><td>${s?esc(s.name):'?'}</td><td>${r?esc(r.name):'?'}</td><td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(m.text)}</td><td>${new Date(m.date).toLocaleString()}</td></tr>`;
+  });
+  mh+='</tbody></table></div>';
+  document.getElementById('admin-msgs').innerHTML=mh;
+}
+
+function adminApproveTx(txId){
+  const db=getDB();
+  const tx=db.transactions.find(t=>t.id===txId);
+  if(!tx)return;
+  if(!confirm('Approve '+tx.amount+' coins?'))return;
+  tx.status='approved';
+  const user=db.users.find(x=>x.id===tx.userId);
+  if(user)user.coins+=tx.amount;
+  saveDB(db);
+  toast('✅ Approved '+tx.amount+' coins for '+(user?user.name:'?'));
+  renderAdmin();
+}
+
+function adminRejectTx(txId){
+  const db=getDB();
+  const tx=db.transactions.find(t=>t.id===txId);
+  if(!tx)return;
+  if(!confirm('Reject this payment?'))return;
+  tx.status='rejected';
+  saveDB(db);
+  toast('❌ Payment rejected');
+  renderAdmin();
+}
+
+function adminAddCoins(){
+  const uid=parseInt(document.getElementById('ac-uid').value);
+  const amt=parseInt(document.getElementById('ac-amount').value);
+  if(!uid||!amt){toast('Enter user ID and coins amount');return;}
+  const db=getDB();
+  const user=db.users.find(x=>x.id===uid);
+  if(!user){toast('User not found');return;}
+  user.coins+=amt;
+  db.transactions.push({id:Date.now(),userId:uid,amount:amt,phone:'',mpesaCode:'',status:'admin_grant',date:Date.now()});
+  saveDB(db);
+  toast('✅ Added '+amt+' coins to '+user.name);
+  document.getElementById('ac-uid').value='';
+  document.getElementById('ac-amount').value='';
+  renderAdmin();
+}
+
+function adminDeleteUser(uid){
+  if(!confirm('Delete this user? This cannot be undone!'))return;
+  const db=getDB();
+  db.users=db.users.filter(x=>x.id!==uid);
+  db.messages=db.messages.filter(m=>m.senderId!==uid&&m.receiverId!==uid);
+  db.transactions=db.transactions.filter(t=>t.userId!==uid);
+  db.matches=db.matches.filter(m=>m.userId!==uid&&m.targetId!==uid);
+  saveDB(db);
+  toast('🗑️ User deleted');
+  renderAdmin();
+}
+
+// ---- HELPERS ----
+function fmtTime(ts){
+  const d=new Date(ts);
+  const now=new Date();
+  const diff=now-d;
+  if(diff<60000)return 'Just now';
+  if(diff<3600000)return Math.floor(diff/60000)+'m ago';
+  if(diff<86400000)return Math.floor(diff/3600000)+'h ago';
+  return d.toLocaleDateString();
+}
+
+function toast(msg){
+  const existing=document.querySelector('.toast');if(existing)existing.remove();
+  const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300);},3500);
+}
+
+function closeModal(){document.getElementById('modal-overlay').classList.remove('show');}
+
+// ---- DEMO MESSAGES (seed some chat data) ----
+(function seedMessages(){
+  const db=getDB();
+  if(db.messages.length>0)return;
+  const now=Date.now();
+  const demo=[
+    {sid:2,rid:3,text:'Hey Mike! How are you doing?',t:now-7200000},
+    {sid:3,rid:2,text:'Hi Akinyi! I\'m great. Love your profile! 😊',t:now-7100000},
+    {sid:2,rid:3,text:'Thanks! So what do you do for fun?',t:now-7000000},
+    {sid:3,rid:2,text:'I hit the gym, watch movies, and cook. You?',t:now-6900000},
+    {sid:2,rid:3,text:'I love cooking too! Maybe we should exchange recipes 😄',t:now-6800000},
+    {sid:7,rid:6,text:'Hey Zawadi, saw you\'re in Mombasa too!',t:now-3600000},
+    {sid:6,rid:7,text:'Yes! The coast life is the best 🌊',t:now-3500000},
+    {sid:7,rid:6,text:'Totally! Would love to grab some biryani sometime',t:now-3400000},
+    {sid:6,rid:7,text:'That sounds amazing! My number is 0756789012 💕',t:now-3300000},
+    {sid:10,rid:3,text:'Mike! Long time no see',t:now-1800000},
+    {sid:3,rid:10,text:'Njeri! How have you been?',t:now-1700000},
+    {sid:10,rid:3,text:'Great! Still designing things. You still into fitness?',t:now-1600000},
+    {sid:3,rid:10,text:'Always 💪',t:now-1500000},
+  ];
+  demo.forEach(d=>{
+    db.messages.push({id:now+Math.random()*100000,senderId:d.sid,receiverId:d.rid,text:d.text,read:true,date:d.t});
+  });
+  saveDB(db);
+})();
+
+// ---- AUTO-LOGIN CHECK ----
+(function(){
+  const sess=localStorage.getItem('lc_session');
+  if(sess){
+    try{
+      const s=JSON.parse(sess);
+      const db=getDB();
+      const u=db.users.find(x=>x.id===s.userId);
+      if(u){currentUser=u;u.online=true;saveDB(db);showPage('dashboard');}
+    }catch(e){}
+  }
+})();
+
+// Save session on login/register
+const origDoLogin=doLogin;
+doLogin=function(){
+  const errBox=document.getElementById('login-error');
+  const u=document.getElementById('l-username').value.trim();
+  const p=document.getElementById('l-password').value;
+  if(!u||!p){errBox.textContent='Enter username and password';errBox.classList.add('show');return;}
+  const db=getDB();
+  const user=db.users.find(x=>x.username.toLowerCase()===u.toLowerCase());
+  if(!user||!checkPw(p,user.password)){errBox.textContent='Invalid username or password';errBox.classList.add('show');return;}
+  user.online=true;saveDB(db);currentUser=user;
+  localStorage.setItem('lc_session',JSON.stringify({userId:user.id}));
+  if(user.isAdmin){showPage('admin');}else{showPage('dashboard');}
+  toast('👋 Welcome back, '+user.name+'!');
+};
+
+const origDoRegister=doRegister;
+doRegister=function(){
+  const errBox=document.getElementById('reg-error');
+  const u=document.getElementById('r-username').value.trim();
+  const p=document.getElementById('r-password').value;
+  const n=document.getElementById('r-name').value.trim();
+  const a=parseInt(document.getElementById('r-age').value);
+  const g=document.getElementById('r-gender').value;
+  const l=document.getElementById('r-location').value.trim();
+  const ph=document.getElementById('r-phone').value.trim();
+  if(!u||!p||!n||!a||!g||!l){errBox.textContent='All fields are required';errBox.classList.add('show');return;}
+  if(a<18){errBox.textContent='You must be 18 or older';errBox.classList.add('show');return;}
+  const db=getDB();
+  if(db.users.find(x=>x.username.toLowerCase()===u.toLowerCase())){errBox.textContent='Username already taken';errBox.classList.add('show');return;}
+  const newUser={id:db.nextUserId++,username:u,password:hashPw(p),name:n,age:a,gender:g,location:l,phone:ph,bio:'',coins:5,isAdmin:false,online:true,joined:Date.now()};
+  db.users.push(newUser);
+  db.transactions.push({id:Date.now(),userId:newUser.id,amount:5,phone:'',mpesaCode:'',status:'bonus',date:Date.now()});
+  saveDB(db);currentUser=newUser;
+  localStorage.setItem('lc_session',JSON.stringify({userId:newUser.id}));
+  showPage('dashboard');
+  toast('✅ Account created! You got 5 free coins!');
+};
+
+const origDoLogout=doLogout;
+doLogout=function(){
+  if(currentUser){const db=getDB();const u=db.users.find(x=>x.id===currentUser.id);if(u)u.online=false;saveDB(db);}
+  localStorage.removeItem('lc_session');
+  currentUser=null;
+  showPage('landing');
+};
+
+// Periodically mark other users online/offline randomly for demo
+setInterval(()=>{
+  const db=getDB();
+  db.users.forEach(u=>{
+    if(u.id===(currentUser?currentUser.id:0))return;
+    if(Math.random()<0.05)u.online=!u.online;
+  });
+  saveDB(db);
+},30000);
+
+</script>
+</body>
+</html>
